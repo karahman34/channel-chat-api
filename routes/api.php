@@ -2,6 +2,8 @@
 
 /** @var \Laravel\Lumen\Routing\Router $router */
 
+use App\Http\Controllers\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -16,3 +18,8 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->post('/login', [
+    'uses' => 'AuthController@login',
+    'as' => 'login',
+]);
