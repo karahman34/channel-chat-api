@@ -36,6 +36,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
     /**
+     * Token TTL.
+     *
+     * @var int
+     */
+    public static $token_ttl = 604800; // 1 week
+
+    /**
     * Get the identifier that will be stored in the subject claim of the JWT.
     *
     * @return mixed
