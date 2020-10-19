@@ -50,3 +50,10 @@ $router->group(['prefix' => 'users', 'as' => 'user'], function () use ($router) 
         $router->patch('/{id:\d+}/password', 'UserController@changePassword');
     });
 });
+
+// Channels Route
+$router->group(['prefix' => 'channels', 'as' => 'channel', 'middleware' => 'auth'], function () use ($router) {
+    $router->post('/{roomId:\d+}', [
+        'uses' => 'ChannelController@newMessage'
+    ]);
+});
