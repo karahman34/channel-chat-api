@@ -19,7 +19,10 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->post('broadcasting/auth', ['uses' => 'BroadcastController@authenticate']);
+$router->post('broadcasting/auth', [
+    'uses' => 'BroadcastController@authenticate',
+    'middleware' => 'auth'
+]);
 
 // Auth Route
 $router->group(['prefix' => 'auth', 'as' => 'auth'], function ($router) {
