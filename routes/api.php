@@ -19,6 +19,8 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->post('broadcasting/auth', ['uses' => 'BroadcastController@authenticate']);
+
 // Auth Route
 $router->group(['prefix' => 'auth', 'as' => 'auth'], function ($router) {
     $router->post('/login', [
