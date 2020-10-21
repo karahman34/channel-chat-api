@@ -100,36 +100,41 @@ class UserController extends Controller
      *
      * @return  JsonResponse
      */
-    public function changeAvatar(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'avatar' => 'required|image|mimes:png,jpg,jpeg|max:4096',
+            'username' => 'required|string|regex:/^[a-z]+([_a-z0-9]+)?$/|min:8|max:20|unique:users,username,' . $id,
+            'avatar' => 'sometimes|mimes:png,jpg,jpeg|max:4096',
         ]);
 
         try {
             $user = User::findOrFail($id);
-            $avatar_path = base_path('public/avatars');
+            $payload =  $request->only('username');
 
-            // User has old avatar
-            if (!is_null($user->avatar) && file_exists($avatar_path . '/' . $user->avatar)) {
-                unlink($avatar_path . '/' . $user->avatar);
+            if ($request->hasFile('avatar')) {
+                $avatar_path = base_path('public/avatars');
+
+                // User has old avatar
+                if (!is_null($user->avatar) && file_exists($avatar_path . '/' . $user->avatar)) {
+                    unlink($avatar_path . '/' . $user->avatar);
+                }
+
+                // Store new avatar
+                $avatar_file = $request->file('avatar');
+                $file_name = time() . '.' . $avatar_file->getClientOriginalExtension();
+                $avatar_file->move($avatar_path, $file_name);
+
+                $payload['avatar'] = $file_name;
             }
 
-            // Store new avatar
-            $avatar_file = $request->file('avatar');
-            $file_name = time() . '.' . $avatar_file->getClientOriginalExtension();
-            $avatar_file->move($avatar_path, $file_name);
-
             // Update the DB
-            $user->update([
-                'avatar' => $file_name
-            ]);
+            $user->update($payload);
 
-            return Transformer::ok('Success to store user avatar.', new UserResource($user));
+            return Transformer::ok('Success to update user profile.', new UserResource($user));
         } catch (ModelNotFoundException $th) {
             return $this->notFoundResponse();
         } catch (\Throwable $th) {
-            return Transformer::fail('Failed to store user avatar.');
+            return Transformer::fail('Failed to update user profile.');
         }
     }
 }

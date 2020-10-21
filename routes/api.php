@@ -49,7 +49,7 @@ $router->group(['prefix' => 'users', 'as' => 'user'], function () use ($router) 
     ]);
 
     $router->group(['middleware' => 'auth'], function ($router) {
-        $router->patch('/{id:\d+}/avatar', 'UserController@changeAvatar');
+        $router->patch('/{id:\d+}', 'UserController@update');
         $router->patch('/{id:\d+}/password', 'UserController@changePassword');
     });
 });
