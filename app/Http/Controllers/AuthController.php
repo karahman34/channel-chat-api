@@ -68,12 +68,18 @@ class AuthController extends Controller
      */
     public function me()
     {
-        return Transformer::ok(
-            'Success to get user details.',
-            [
-                'user' => new UserResource(auth()->user()),
-            ]
-        );
+        try {
+            return Transformer::ok(
+                'Success to get user details.',
+                [
+                    'user' => new UserResource(auth()->user()),
+                ]
+            );
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to get user details.', [
+                'errors' => $th
+            ]);
+        }
     }
 
     /**
@@ -83,10 +89,16 @@ class AuthController extends Controller
      */
     public function refresh()
     {
-        return Transformer::ok(
-            'Success to refresh token.',
-            $this->respondWithToken(auth()->setTTL($this->token_ttl)->refresh())
-        );
+        try {
+            return Transformer::ok(
+                'Success to refresh token.',
+                $this->respondWithToken(auth()->setTTL($this->token_ttl)->refresh())
+            );
+        } catch (\Throwable $th) {
+            return Transformer::fail('Failed to refresh token.', [
+                'errors' => $th
+            ]);
+        }
     }
 
     /**
